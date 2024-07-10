@@ -6,12 +6,13 @@
 #include <map>
 #include <iostream>
 #include <vector>
+#include <algorithm>
 
 
 class Dictionary {
     private:
         void parseCSV(){
-            std::ifstream file("/Users/brennen/Documents/scripts/csc1061-capstone/formatted_dictionary.csv");
+            std::ifstream file("../formatted_dictionary.csv");
             if (!file.is_open()) {
                 std::cout << "Failed to open file" << std::endl;
             }
@@ -25,7 +26,6 @@ class Dictionary {
                 dictionaryMap[key] = value;
                 ++key;
             }
-
             file.close();
             dictionary = dictionaryMap;
 
