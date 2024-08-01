@@ -6,6 +6,9 @@
 #include <random>
 #include <iostream>
 
+#include "Keywords.h"
+#include "Trie.h"
+
 
 class Board{
     private:
@@ -13,6 +16,9 @@ class Board{
         // std::vector<std::string> solutions;
         // int keywordsRemaining = 5;
         // int pointTotal = 0;
+        Trie dictionaryTrie;
+        std::vector<std::vector<bool>> visited;
+
 
         void generateKeywords() {
             int numberOfFiveLetterWords = dictionary.fiveLetterWords.size();
@@ -25,15 +31,22 @@ class Board{
             std::mt19937 g(rd());
             std::shuffle(numbers.begin(), numbers.end(), g);
             for (int i=0;i<5;++i) {
-                keywords.push_back(dictionary.fiveLetterWords[numbers[i]]);
+                Keywords* newKeyword = new Keywords(dictionary.fiveLetterWords[numbers[i]]);
+                keywords.push_back(newKeyword);
+                std::cout << newKeyword->word << std::endl;
             }
+//            for (const std::string& keyword : keywords) {
+//                dictionaryTrie.insert(keyword);
+//            }
         }
         void scrambleLetters() {
             // Take all the keywords and randomly assign all letters
             // to the 5x5 array boardLetters
             std::string concatString;
-            for (const std::string& str : keywords) {
-                concatString += str;
+            for (auto& keyword : keywords) {
+                for (const char& c : keyword->word) {
+                    concatString += c;
+                }
             }
             std::random_device rd;
             std::mt19937 g(rd());
@@ -47,25 +60,45 @@ class Board{
             }
         }
         
-        void findAllSolutions() {
-            // Iterate over the Dictionary and build a trie data structure
+        void buildTrie() {
+             for (const auto &pair : dictionary.dictionary) {
+                 std::string word = pair.second->word;
+                 dictionaryTrie.insert(word);
+             }
         }
+
+
+
+
     public:
         Dictionary dictionary;
-        std::vector<std::string> keywords;
+        std::vector<Keywords*> keywords;
+        int keywordsRemaining = 5;
         void drawBoard() {
             // Write the boardArray letters to stdout
-            for (int i=0;i<5;++i) {
-                for (int j=0;j<5;++j) {
+            for (int i = 0; i < 5; ++i) {
+                for (int j = 0; j < 5; ++j) {
                     std::cout << boardLetters[i][j] << " ";
                 }
                 std::cout << std::endl;
             }
         }
+    bool checkWord(std::string word) {
+        // Check if the word is in the dictionary
+        // If it is, mark the keyword as found
+        for (auto& keyword : keywords) {
+            if (keyword->word == word) {
+                keyword->foundKeyword = true;
+                return true;
+            }
+        }
+        return false;
+    }
         Board(Dictionary dict) {
             dictionary = dict;
+            visited = std::vector<std::vector<bool>>(5, std::vector<bool>(5, false));
             generateKeywords();
             scrambleLetters();
-//            drawBoard();
+            buildTrie();
         }
 };

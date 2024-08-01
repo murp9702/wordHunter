@@ -8,6 +8,10 @@
 #include <vector>
 #include <algorithm>
 
+#include "Words.h"
+#include "Keywords.h"
+
+
 
 class Dictionary {
     private:
@@ -18,12 +22,13 @@ class Dictionary {
             }
             std::string line, value;
             int key = 0;
-            std::map<int, std::string> dictionaryMap;
+            std::map<int, Words*> dictionaryMap;
 
             while (std::getline(file, line)) {
                 std::stringstream ss(line);
                 std::getline(ss, value, ',');
-                dictionaryMap[key] = value;
+                Words* newWord = new Words(value);
+                dictionaryMap[key] = newWord;
                 ++key;
             }
             file.close();
@@ -33,14 +38,15 @@ class Dictionary {
                 
         void findFiveLetterWords(){
             for (const auto &word : dictionary) {
-                if (word.second.length() == 5){
-                    fiveLetterWords.push_back(word.second);
+                if (word.second->word.length() == 5){
+
+                    fiveLetterWords.push_back(word.second->word);
                 }
             }
             std::sort(fiveLetterWords.begin(), fiveLetterWords.end());
         }
     public:
-        std::map<int, std::string> dictionary;
+        std::map<int, Words*> dictionary;
         std::vector<std::string> fiveLetterWords;
         
         Dictionary() {
