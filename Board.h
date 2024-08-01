@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <random>
 #include <iostream>
+#include <set>
 
 #include "Keywords.h"
 #include "Trie.h"
@@ -18,6 +19,9 @@ class Board{
         // int pointTotal = 0;
         Trie dictionaryTrie;
         std::vector<std::vector<bool>> visited;
+        std::set<std::string> foundWords;
+        std::vector<std::string> boardKeywords;
+
 
 
         void generateKeywords() {
@@ -33,6 +37,7 @@ class Board{
             for (int i=0;i<5;++i) {
                 Keywords* newKeyword = new Keywords(dictionary.fiveLetterWords[numbers[i]]);
                 keywords.push_back(newKeyword);
+                boardKeywords.push_back(newKeyword->word);
                 std::cout << newKeyword->word << std::endl;
             }
 //            for (const std::string& keyword : keywords) {
@@ -85,6 +90,7 @@ class Board{
         // If str is present in dictionary, then print it
         if (dictionaryTrie.search(str))
             std::cout << str << std::endl;
+            foundWords.insert(str);
 
         // Traverse 8 adjacent cells of boardLetters[i][j]
         for (int row = i - 1; row <= i + 1 && row < 5; row++)
@@ -130,16 +136,26 @@ class Board{
                 std::cout << std::endl;
             }
         }
-    bool checkWord(std::string word) {
+    std::pair<bool,bool> checkWord(std::string word) {
         // Check if the word is in the dictionary
         // If it is, mark the keyword as found
         for (auto& keyword : keywords) {
             if (keyword->word == word) {
-                keyword->foundKeyword = true;
-                return true;
+                if (keyword->foundKeyword) {
+                    std::cout << "Found word already" << std::endl;
+                    return std::make_pair(false, false);
+                } else {
+                    keyword->foundKeyword = true;
+                    return std::make_pair(true, true);
+                }
+
             }
         }
-        return false;
+        if (foundWords.find(word) != foundWords.end()) {
+            foundWords.erase(word);
+            return std::make_pair(true, false);
+        }
+        return std::make_pair(false, false);
     }
         Board(Dictionary dict) {
             dictionary = dict;

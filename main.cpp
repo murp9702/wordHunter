@@ -34,13 +34,20 @@ int main() {
 //    }
     printIntroduction();
     board.drawBoard();
+
     while(board.keywordsRemaining > 0) {
         std::string input;
         std::cout << "Enter a word: ";
         std::cin >> input;
-        if(board.checkWord(input)) {
-            std::cout << "Correct!" << std::endl;
+        std::pair<bool, bool> result = board.checkWord(input);
+        bool isFound = result.first;
+        bool ifKeyword = result.second;
+        if(isFound && ifKeyword) {
+            std::cout << "Found a keyword" << std::endl;
             board.keywordsRemaining--;
+            std::cout << board.keywordsRemaining << " keywords remaining." << std::endl;
+        } else if(isFound && !ifKeyword) {
+            std::cout << "Found a bonus word!" << std::endl;
             std::cout << board.keywordsRemaining << " keywords remaining." << std::endl;
         } else {
             std::cout << "Incorrect!" << std::endl;
