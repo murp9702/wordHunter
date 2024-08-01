@@ -66,6 +66,53 @@ class Board{
                  dictionaryTrie.insert(word);
              }
         }
+    // Insert all words from the dictionary into the Trie
+//    for (const auto &word : dictionary.words) {
+//        dictionaryTrie.insert(word);
+//    }
+
+// Function to perform DFS from a cell
+    void searchWord(TrieNode* root, int i, int j, std::string str) {
+        visited[i][j] = true;
+        str = str + boardLetters[i][j];
+
+        // If str is not a prefix of any word in the Trie, return
+        if (!dictionaryTrie.isPrefix(str)) {
+            visited[i][j] = false;
+            return;
+        }
+
+        // If str is present in dictionary, then print it
+        if (dictionaryTrie.search(str))
+            std::cout << str << std::endl;
+
+        // Traverse 8 adjacent cells of boardLetters[i][j]
+        for (int row = i - 1; row <= i + 1 && row < 5; row++)
+            for (int col = j - 1; col <= j + 1 && col < 5; col++)
+                if (row >= 0 && col >= 0 && !visited[row][col])
+                    searchWord(root, row, col, str);
+
+        // Erase current character from string and mark visited of current cell as false
+        str.erase(str.length() - 1);
+        visited[i][j] = false;
+    };
+
+
+// Function to search words in the boardLetters array
+    void searchWords() {
+        TrieNode* root = dictionaryTrie.getRoot();
+
+        // Initialize all characters as not visited
+        std::vector<std::vector<bool>> visited(5, std::vector<bool>(5, false));
+
+        // Initialize current string
+        std::string str = "";
+
+        // Consider every character and look for all words starting with this character
+        for (int i = 0; i < 5; i++)
+            for (int j = 0; j < 5; j++)
+                searchWord(root, i, j, str);
+    }
 
 
 
@@ -100,5 +147,6 @@ class Board{
             generateKeywords();
             scrambleLetters();
             buildTrie();
+            searchWords();
         }
 };

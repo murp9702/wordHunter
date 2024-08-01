@@ -30,6 +30,17 @@ public:
         return root;
     }
 
+    bool isPrefix(std::string prefix) {
+        TrieNode* node = root;
+        for (int i = 0; i < prefix.length(); i++) {
+            int index = prefix[i] - 'a';
+            if (!node->children[index])
+                return false;
+            node = node->children[index];
+        }
+        return true;
+    }
+
     void insert(std::string word) {
         TrieNode* node = root;
         for (int i = 0; i < word.length(); i++) {
